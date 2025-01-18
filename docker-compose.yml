@@ -3,6 +3,7 @@ version: '3.8'
 services:
   nginx:
     image: nginx:1.21.1
+    platform: linux/amd64
     ports:
       - "80:80"
     volumes:
@@ -18,6 +19,7 @@ services:
 
   mysql:
     image: mysql:8.0.26
+    platform: linux/amd64
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: laravel_db
