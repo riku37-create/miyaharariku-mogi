@@ -1,5 +1,15 @@
+## アプリケーション名
+  coachtechフリマ
+## 環境
+・Laravel:
+・Php:
+・Database:MySQL
+・その他:
+
+## 環境構築
+```
 1. 下記でディレクトリ内にクローンしてください。
-  $ git@github.com:riku37-create/miyaharariku-kadai2.git
+  $ git@github.com:riku37-create/miyaharariku-mogi.git
 2. 開発環境を構築するため、以下のコマンドを実行してください。
   $ docker-compose up -d --build
 3. Laravel のパッケージのインストールを行うため下記のコマンドを実行してください。
@@ -31,3 +41,40 @@ PHPコンテナ内で、以下のコマンドを実行してください。
   $ php artisan storage:link
 9. エラーが発生する場合は、以下のコマンドを実行しもう一度コマンドを実行しなおしてください。
   $ sudo chmod -R 777 src/storage
+
+```
+
+## ER図
+![ER図](./product.drawio.png)
+
+## URL
+```
+・http://localhost/products　商品一覧画面
+・http://localhost/products/register　商品登録画面
+・http://localhost/products/{productId}　商品詳細画面
+```
+
+## ファイル
+```
+コントローラー: ProductController
+ビュー:  商品一覧画面: index.blade.php
+        商品登録画面: register.blade.php
+        商品詳細画面: detail.blade.php
+        レイアウト用: app.blade.php
+css: 商品一覧画面: index.css
+     商品登録画面: register.css
+     商品詳細画面: detail.css
+     レイアウト用: common.css
+     リセット用: sanitize.css
+フォームリクエスト: ProductRequest.php
+モデル: Product.php
+       Season.php
+マイグレーション: create.seasons.table(seasonsテーブル)
+               create.products.table(productsテーブル)
+               create.product_season.table(中間テーブル)
+シーディング: SeasonsTableSeeder
+            ProductsTableSeeder
+            ProductSeasonTableSeeder
+```
+## その他
+登録した画像は、src/storage/app/public/fruits-imgに保存。

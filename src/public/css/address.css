@@ -1,0 +1,46 @@
+.user-address {
+    width: 50%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-address__title {
+    width: 100%;
+    text-align: center;
+}
+
+.user-address-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.address-content__label {
+    width: 100%;
+    display: block;
+    font-weight: 700;
+}
+
+.address-content__form-select {
+    width: 100%;
+    height: 45px;
+}
+.address-content__form {
+    width: 100%;
+    height: 45px;
+}
+
+.address-content__button {
+    width: 100%;
+    height: 45px;
+    display: block;
+    background-color: #FF5555;
+    color: #fff;
+    border: 0;
+    border-radius: 2px;
+    font-size: 30px;
+    font-weight: 700;
+    cursor: pointer;
+}

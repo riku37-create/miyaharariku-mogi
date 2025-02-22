@@ -1,0 +1,159 @@
+.product-sell {
+    width: 50%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-sell__title {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+}
+
+.product-sell__form {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sell__form--image {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form--image-label {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.form--image-content {
+    width: 100%;
+    height: 150px;
+    border: solid 1px #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content-image {
+    display: block;
+    height: 100%;
+}
+
+.content-image__image {
+    height: 100%;
+}
+
+.content-file {
+    margin-right: 100px;
+    display: block;
+    background-color: #FF5555;
+    color: #fff;
+    border: 0;
+    border-radius: 2px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sell__form--detail,
+.sell__form--description {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-title {
+    margin-top: 20px;
+}
+
+.form--detail-title,
+.form--description-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    border-bottom:1px solid #000;
+}
+
+.form--detail-category,
+.form--description-subtitle {
+    width: 100%;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.category-content {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.category-content__block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.content__block-name {
+    margin-bottom: 10px;
+    display: block;
+    border: solid 1px #FF5555;
+    border-radius: 10px;
+}
+
+.content__block-name--text {
+    margin: 3px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #FF5555;
+    text-align: center;
+}
+
+.content__block-button {
+    display: block;
+    margin-right: 20px;
+}
+
+.form--detail-condition {
+    width:  100%;
+    font-weight: 700;
+}
+
+.condition-content {
+    width: 100%;
+    height: 45px;
+    border: 1px solid #000;
+}
+
+.condition-content__select {
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+.description-form {
+    width: 100%;
+    height: 45px;
+}
+
+.description-form__description {
+    width: 100%;
+    height: 125px;
+}
+
+.form-button {
+    width: 100%;
+    margin-top: 20px;
+    display: block;
+    background-color: #FF5555;
+    color: #fff;
+    border: 0;
+    border-radius: 2px;
+    font-size: 30px;
+    font-weight: 700;
+    cursor: pointer;
+}
