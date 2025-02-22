@@ -39,7 +39,7 @@
 </div>
 <div class="product-main">
     @if($products->isEmpty()){{-- 商品がない時 --}}
-    <div class="product__item--none">商品はありません</div>
+    <h1 class="product__item--none">商品はありません</h1>
     @else
     @if (request('page', 'sell') === 'sell')
     @foreach ($products as $product)

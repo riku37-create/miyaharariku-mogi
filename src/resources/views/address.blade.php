@@ -64,7 +64,9 @@
         </div>
     </form>
 </div>
+@endsection
 
+@section('script')
 <script>
     document.getElementById('past_address').addEventListener('change', function() {
     let selected = this.value ? this.value.split(',') : null;

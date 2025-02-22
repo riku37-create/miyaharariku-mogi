@@ -24,7 +24,7 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'image' => 'required|image|mimes:jpeg,png|max:2048',
+            'image' => 'required|image|mimes:jpeg,png|max:10240',
             'name' => 'required|string|max:255',
             'categories' => 'required',
             'condition_id' => 'required',
@@ -38,6 +38,7 @@ class ProductRequest extends FormRequest
         return [
             'image.required' => '画像を選択してください。',
             'image.mimes' => '画像はjpegまたはpng形式でアップロードしてください。',
+            'image.max' => '画像が大きすぎます。',
             'name.required' => 'お名前を入力してください。',
             'categories[].required' => 'カテゴリーを選択してください。',
             'condition_id.required' => '状態を選択してください。',

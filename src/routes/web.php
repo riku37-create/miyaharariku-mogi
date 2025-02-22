@@ -46,7 +46,7 @@ Route::group(['prefix' => 'sell'], function() {
   Route::group(['middleware' => 'auth'], function() {
     Route::get('/{id?}', [ProductController::class, 'sell'])->name('product.sell');
     Route::post('/save/{id?}', [ProductController::class, 'save'])->name('product.save');
-    Route::post('/delete/{id?}', [ProductController::class, 'delete'])->name('product.delete');
+    Route::post('/delete/{id?}', [ProductController::class, 'deleteProduct'])->name('product.delete');
   });
 });
 

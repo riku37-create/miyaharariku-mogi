@@ -1,10 +1,10 @@
 ## アプリケーション名
   coachtechフリマ
 ## 環境
-・Laravel:
-・Php:
-・Database:MySQL
-・その他:
+・Laravel Framework: 8.83.8
+・nginx: 1.21.1
+・Php: PHP 7.4.9
+・mysql: 15.1
 
 ## 環境構築
 ```
@@ -16,7 +16,7 @@
   $ docker-compose exec php bash
   $ composer install
 4. データベースに接続するために、.env.exampleファイルをコピーして、.envファイルを作成します。
-PHPコンテナ内で、以下のコマンドを実行してください。
+  PHPコンテナ内で、以下のコマンドを実行してください。
   $ cp .env.example .env
 5. VSCode から.envファイルの11行目以降を以下のように修正してください。
   // 前略
@@ -45,36 +45,4 @@ PHPコンテナ内で、以下のコマンドを実行してください。
 ```
 
 ## ER図
-![ER図](./product.drawio.png)
-
-## URL
-```
-・http://localhost/products　商品一覧画面
-・http://localhost/products/register　商品登録画面
-・http://localhost/products/{productId}　商品詳細画面
-```
-
-## ファイル
-```
-コントローラー: ProductController
-ビュー:  商品一覧画面: index.blade.php
-        商品登録画面: register.blade.php
-        商品詳細画面: detail.blade.php
-        レイアウト用: app.blade.php
-css: 商品一覧画面: index.css
-     商品登録画面: register.css
-     商品詳細画面: detail.css
-     レイアウト用: common.css
-     リセット用: sanitize.css
-フォームリクエスト: ProductRequest.php
-モデル: Product.php
-       Season.php
-マイグレーション: create.seasons.table(seasonsテーブル)
-               create.products.table(productsテーブル)
-               create.product_season.table(中間テーブル)
-シーディング: SeasonsTableSeeder
-            ProductsTableSeeder
-            ProductSeasonTableSeeder
-```
-## その他
-登録した画像は、src/storage/app/public/fruits-imgに保存。
+![ER図](./mogi.drawio.png)

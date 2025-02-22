@@ -166,9 +166,13 @@ class ProductController extends Controller
     }
 
     //商品削除機能
-    public function delete($id)
+    public function deleteProduct($id)
     {
-        Product::find($id)->delete();
+        $deleteProduct = Product::find($id);
+        if($deleteProduct) {
+            Storage::disk('public')->delete($deleteProduct->image);
+            $deleteProduct->delete();
+        }
         return redirect()->route('profile.index');
     }
 }
