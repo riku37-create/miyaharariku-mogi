@@ -6,7 +6,11 @@
 
 @section('content')
 <div class="user-edit">
+    @if($profile->id)
+    <h1 class="edit-title">プロフィール編集</h1>
+    @else
     <h1 class="edit-title">プロフィール設定</h1>
+    @endif
     <form class="edit-form" action="{{ $profile->id ? route('profile.update', ['profileId' => $profile->id]) : route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
@@ -78,7 +82,11 @@
             </ul>
         </div>
         @endif
+        @if($profile->id)
         <input class="form-button" type="submit" value="更新する">
+        @else
+        <input class="form-button" type="submit" value="作成する">
+        @endif
     </form>
 </div>
 @endsection

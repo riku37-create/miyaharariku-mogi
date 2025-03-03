@@ -40,7 +40,7 @@ class ProductRequest extends FormRequest
             'image.mimes' => '画像はjpegまたはpng形式でアップロードしてください。',
             'image.max' => '画像が大きすぎます。',
             'name.required' => 'お名前を入力してください。',
-            'categories[].required' => 'カテゴリーを選択してください。',
+            'categories.required' => 'カテゴリーを選択してください。',
             'condition_id.required' => '状態を選択してください。',
             'description.required' => '説明を入力してください。',
             'price.required' => '価格を入力してください。',

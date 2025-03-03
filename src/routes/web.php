@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
 
 
 /*
@@ -18,7 +18,6 @@ use App\Http\Controllers\LogoutController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 
 Route::post('/register', [RegisterController::class, 'store']);
 Route::post('/login', [LoginController::class, 'store']);
@@ -60,7 +59,7 @@ Route::group(['prefix' => 'purchase/{id}/address/'], function() {
 Route::group(['prefix' => 'mypage'], function() {
   Route::group(['middleware' => 'auth'], function() {
     Route::get('', [UserController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [UserController::class,'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [UserController::class,'edit'])->name('profile.edit')->middleware(['verified']);
     Route::PATCH('/profile/update/{profileId?}', [UserController::class,'update'])->name('profile.update');
   });
 });

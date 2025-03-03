@@ -61,10 +61,10 @@ html {
 }
 
 .nav-item__button {
+    padding: 0;
     border: none;
     outline: none;
     background: none;
-    font-size: 15px;
     font-weight: bold;
     color: #fff;
     cursor: pointer;
@@ -76,3 +76,48 @@ html {
     font-weight: bold;
     color: #fff;
 }
+
+/* @media screen and (max-width: 480px) {
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .header-inner {
+        display: block;
+        height: auto;
+    }
+
+    .header-inner__title {
+        width: 100%;
+        margin-bottom: 10px;
+        margin-left: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .title-a {
+        width: 50%;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .header-inner__search {
+        width: 50%;
+        height: auto;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        gap: 0;
+    }
+
+    .header-inner__nav {
+        width: 100%;
+    }
+
+    .nav-list {
+        margin: 0;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+} */

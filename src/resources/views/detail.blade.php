@@ -54,7 +54,7 @@
         </div>
         @if($product->order()->where('product_id', $product->id)->exists())
         <div class="right-purchase">
-            <p class="right-purchase__none">この商品は購入されています</p>
+            <div class="right-purchase__none" style="color: #FF5555;">この商品は購入されています</div>
         </div>
         @else
         <form class="right-purchase" action="{{ route('product.purchase', ['id' => $product->id]) }}" method="post">
@@ -94,17 +94,17 @@
             @csrf
             <label class="comment-area__label" for="content">商品へのコメント</label>
             <textarea class="comment-area__text" name="content"></textarea>
+            @if ($errors->has('content'))
+            <div class="form__error">
+                <ul>
+                    @foreach ($errors->get('content') as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
             <button class="comment-area__button" type="submit">コメントを送信する</button>
         </form>
-        @if ($errors->has('content'))
-        <div class="form__error">
-            <ul>
-                @foreach ($errors->get('content') as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
         @endif
         @if($comments->isEmpty())
         <div class="comment-box-none">コメントはまだありません</div>
@@ -116,7 +116,7 @@
                 <span class="avatar-name">{{ $comment->user->profile->name }}</span>
             </div>
             <div class="comment-box__comment">
-                <span class="comment-content">{{ $comment->content }}</span>
+                <pre class="comment-content">{{ $comment->content }}</pre>
                 <div class="comment-sub">
                     <span class="sub-time">{{ $comment->created_at->diffForHumans() }}</span>
                     @if($comment->user_id === Auth::id())

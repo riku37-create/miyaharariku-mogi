@@ -7,9 +7,17 @@
 @section('content')
 <div class="product-sell">
     @if($product->id)
-    <h1 class="product-sell__title">商品の編集</h1>
+    <div class="product-sell-header">
+        <h1 class="product-sell__title-edit">商品の編集</h1>
+        <form class="header-form" action="{{ route('product.delete', ['id' => $product->id]) }}" method="post">
+            @csrf
+            <button class="header-form__button" type="submit">
+                <i class="fa-solid fa-trash" style="color: #ff0000;"></i>
+            </button>
+        </form>
+    </div>
     @else
-    <h1 class="product-sell__title">商品の出品</h1>
+    <h1 class="product-sell__title-create">商品の出品</h1>
     @endif
     <form class="product-sell__form" action="{{ $product->id ? route('product.save', ['id' => $product->id]) : route('product.save') }}" method="post" enctype="multipart/form-data">
         @csrf
@@ -46,18 +54,18 @@
             <div class="category-content">
                 @foreach($categories as $category)
                 <div class="category-content__block">
-                    <label class="content__block-name" for="categories[]">
-                        <span class="content__block-name--text">{{ $category->content }}</span>
-                    </label>
-                    <input class="content__block-button" type="checkbox" name="categories[]" value="{{ $category->id }}"
+                    <input id="category_{{ $category->id }}" class="content__block-button" type="checkbox" name="categories[]" value="{{ $category->id }}"
                     {{ in_array($category->id, old('categories', $product->categories->pluck('id')->toArray())) ? 'checked' : '' }}>
+                    <label class="content__block-name" for="category_{{ $category->id }}">
+                        {{ $category->content }}
+                    </label>
                 </div>
                 @endforeach
             </div>
-            @if ($errors->has('categories[]'))
+            @if ($errors->has('categories'))
             <div class="form__error">
                 <ul>
-                    @foreach ($errors->get('categories[]') as $error)
+                    @foreach ($errors->get('categories') as $error)
                     <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -75,10 +83,10 @@
                     @endforeach
                 </select>
             </div>
-            @if ($errors->has('conditions'))
+            @if ($errors->has('condition_id'))
             <div class="form__error">
                 <ul>
-                    @foreach ($errors->get('conditions') as $error)
+                    @foreach ($errors->get('condition_id') as $error)
                     <li>{{ $error }}</li>
                     @endforeach
                 </ul>
