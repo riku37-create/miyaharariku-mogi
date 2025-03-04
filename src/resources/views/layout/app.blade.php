@@ -21,6 +21,11 @@
                 </a>
             </div>
             @yield('search')
+            <div class="responsive_btn">
+                <div class="menu_line"></div>
+                <div class="menu_line"></div>
+                <div class="menu_line"></div>
+            </div>
             <nav class="header-inner__nav">
                 <ul class="nav-list">
                     <li class="nav-item">
@@ -42,4 +47,15 @@
     @yield('content')
 
     @yield('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const responsive_menu_btn = document.querySelector('.responsive_btn');
+        const header_menu_detail = document.querySelector('.header-inner__nav');
+
+        responsive_menu_btn.addEventListener('click', function () {
+            header_menu_detail.classList.toggle('menu_active');
+        });
+        });
+    </script>
+
 </body>
