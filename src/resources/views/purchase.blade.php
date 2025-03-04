@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<form class="purchase-content" action="{{ route('product.order', ['id' => $product->id])}}" method="post">
+<form class="purchase-content" action="{{ route('checkout', ['id' => $product->id]) }}" method="post">
     @csrf
     <div class="purchase-content__left">
         <div class="left-content">

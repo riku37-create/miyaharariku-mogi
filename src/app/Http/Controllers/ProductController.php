@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
-use App\Http\Requests\PurchaseRequest;
 use App\Http\Requests\CommentRequest;
 use App\Models\Product;
 use App\Models\Comment;
 use App\Models\Condition;
 use App\Models\Category;
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    // 商品一覧画面表示
     public function index(Request $request)
     {
         $page = $request->get('page', 'recommend');
@@ -143,26 +142,6 @@ class ProductController extends Controller
         $user = Auth::user();
         $product = Product::find($id);
         return view('purchase', compact('product','user'));
-    }
-
-    //商品購入機能
-    public function order(PurchaseRequest $request, $id)
-    {
-        $user = Auth::user();
-        $address = session('temp_address', [
-            'post' => $user->profile->post,
-            'address' => $user->profile->address,
-            'building' => $user->profile->building
-        ]);
-        $order = new Order();
-        $order->user_id = $user->id;
-        $order->product_id = $id;
-        $order->method = $request->method;
-        $order->post = $address['post'];
-        $order->address = $address['address'];
-        $order->building = $address['building'];
-        $order->save();
-        return redirect()->route('product.index');
     }
 
     //商品削除機能

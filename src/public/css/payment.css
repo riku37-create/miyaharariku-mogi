@@ -1,0 +1,28 @@
+.payment {
+    width: 50%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-ttl {
+    text-align: center;
+}
+
+.payment-txt {
+    text-align: center;
+}
+
+.payment-home {
+    width: 100%;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    background-color: #FF5555;
+    color: #fff;
+    border: 0;
+    border-radius: 2px;
+    font-size: 30px;
+    font-weight: 700;
+    cursor: pointer;
+}

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 
@@ -23,6 +24,10 @@ Route::post('/register', [RegisterController::class, 'store']);
 Route::post('/login', [LoginController::class, 'store']);
 Route::post('/logout', [LogoutController::class, 'destroy']);
 
+Route::post('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
+Route::get('/success', [PaymentController::class, 'success'])->name('checkout.success');
+Route::get('/cancel', [PaymentController::class, 'cancel'])->name('checkout.cancel');
+
 Route::get('/', [ProductController::class, 'index'])->name('product.index');
 Route::post('products/search', [ProductController::class, 'search'])->name('product.search');
 Route::post('profile/search', [UserController::class, 'search'])->name('profile.search');
@@ -36,7 +41,7 @@ Route::group(['prefix' => 'product/{id}'], function() {
     Route::get('/purchase', [ProductController::class, 'purchase'])->name('product.purchase');
     Route::post('/purchase', [ProductController::class, 'purchase'])->name('product.purchase');
   });
-  Route::post('/order', [ProductController::class, 'order'])->name('product.order');
+  // Route::post('/order', [ProductController::class, 'order'])->name('product.order');
 });
 
 Route::post('/delete/{commentId}', [ProductController::class, 'commentDelete'])->name('comment.delete');
