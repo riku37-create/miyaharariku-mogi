@@ -41,7 +41,6 @@ Route::group(['prefix' => 'product/{id}'], function() {
     Route::get('/purchase', [ProductController::class, 'purchase'])->name('product.purchase');
     Route::post('/purchase', [ProductController::class, 'purchase'])->name('product.purchase');
   });
-  // Route::post('/order', [ProductController::class, 'order'])->name('product.order');
 });
 
 Route::post('/delete/{commentId}', [ProductController::class, 'commentDelete'])->name('comment.delete');

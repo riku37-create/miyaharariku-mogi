@@ -28,7 +28,7 @@ class ProductController extends Controller
                 return view('auth.login');
             }
         } else {
-            $products = Product::select('id', 'name', 'image')->latest('products.created_at')->get();
+            $products = Product::where('user_id', '!=', Auth::id())->select('id', 'name', 'image')->latest('products.created_at')->get();
         }
         return view('products', compact('page','products'));
     }
