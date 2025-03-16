@@ -20,9 +20,9 @@ class PaymentController extends Controller
 
         // セッションに購入情報を保存（決済完了時に取得）
         session([
-            'purchase_product_id' => $id,
-            'purchase_method' => $request->method,
-            'purchase_address' => session('temp_address', [
+                'purchase_product_id' => $id,
+                'purchase_method' => $request->method,
+                'purchase_address' => session('temp_address', [
                 'post' => $user->profile->post,
                 'address' => $user->profile->address,
                 'building' => $user->profile->building

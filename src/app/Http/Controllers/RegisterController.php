@@ -52,7 +52,7 @@ class RegisterController extends Controller
      * @return \Laravel\Fortify\Contracts\RegisterResponse
      */
     public function store(RegisterRequest $request,
-                          CreatesNewUsers $creator): \Illuminate\Http\RedirectResponse
+                          CreatesNewUsers $creator) : \Illuminate\Http\RedirectResponse
     {
         if (config('fortify.lowercase_usernames')) {
             $request->merge([
@@ -64,6 +64,6 @@ class RegisterController extends Controller
 
         $this->guard->login($user);
 
-        return redirect()->route('profile.edit');
+        return redirect()->route('verification.notice');
     }
 }

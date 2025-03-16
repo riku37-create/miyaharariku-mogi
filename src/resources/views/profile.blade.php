@@ -5,7 +5,7 @@
 @endsection
 
 @section('search')
-<form class="header-inner__search" action="{{ route('profile.search') }}" method="post">
+<form class="header-inner__search" action="{{ route('profile.search') }}" method="get">
     @csrf
     <input type="hidden" name="page" value="{{ request('page', 'sell') }}">
     <input class="search-input" name="input" type="text" value="{{ old('input', request('input')) }}" placeholder="何をお探しですか?">

@@ -7,7 +7,7 @@
 @section('content')
 <div class="product-detail">
     <div class="product-detail__left">
-        <img class="left-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+        <img class="left-image" src="{{ asset('storage/' . $product->image ) }}" alt="{{ $product->name }}">
     </div>
     <div class="product-detail__right">
         <div class="right-name">
@@ -81,11 +81,11 @@
         </div>
         <div class="right-condition">
             <div class="right-condition__label">商品の状態</div>
-            <div class="right-condition__text">{{ $product->condition->content}}</div>
+            <div class="right-condition__text">{{ $product->condition->content }}</div>
         </div>
         <h2 class="right-subtitle">出品者</h2>
         <div class="right-user">
-            <img class="avatar-image" src="{{ asset('storage/' . $product->user->profile->image) }}" alt="">
+            <img class="avatar-image" src="{{ asset('storage/' . $product->user->profile->image) }}" alt="{{ $product->user->profile->name }}">
             <span class="avatar-name">{{ $product->user->profile->name }}</span>
         </div>
         <h2 id="comment" class="right-subtitle">コメント ({{ $commentCount }})</h2>

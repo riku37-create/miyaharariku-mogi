@@ -23,13 +23,14 @@ class ProductController extends Controller
         if ($page === 'mylist') {
             if($user) {
                 $products = $user->likedProducts()
-                ->select('products.id', 'products.name', 'products.image')->latest('likes.created_at')->get();
+                ->select('products.id', 'products.name', 'products.image')->latest('likes.created_at')->paginate(15);
             } else {
-                return view('auth.login');
+                return redirect()->route('login');
             }
         } else {
-            $products = Product::where('user_id', '!=', Auth::id())->select('id', 'name', 'image')->latest('products.created_at')->get();
+            $products = Product::where('user_id', '!=', Auth::id())->select('id', 'name', 'image')->latest('products.created_at')->paginate(15);
         }
+
         return view('products', compact('page','products'));
     }
 
@@ -113,9 +114,11 @@ class ProductController extends Controller
         $data = $request->all();
 
         // 画像をストレージから削除
-        $deleteImgProduct = Product::find($id);
-        if($deleteImgProduct) {
-            Storage::disk('public')->delete($deleteImgProduct->image);
+        if($id) {
+            $deleteImgProduct = Product::find($id);
+            if($deleteImgProduct) {
+                Storage::disk('public')->delete($deleteImgProduct->image);
+            }
         }
 
         //画像をパスで保存
@@ -123,11 +126,13 @@ class ProductController extends Controller
         if($request->hasFile('image')){
             $path = $request->file('image')->store('product-img', 'public');
             $data['image'] = $path;
+        } elseif($id) {
+            $data['image'] = Product::find($id)->image ?? null;
         }
-        $product = Product::updateOrCreate(
-            ['id' => $id],
-            $data
-        );
+
+        $product = Product::findOrNew($id);
+        $product->fill($data);
+        $product->save();
 
         if ($request->has('categories')) {
         $product->categories()->sync($request->categories);

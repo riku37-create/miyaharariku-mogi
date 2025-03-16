@@ -28,7 +28,12 @@ class UserController extends Controller
             ->select('id','name','image')->get();
         }
         $profile = Profile::where('user_id', $user->id)->first();
-        return view('profile', compact('page', 'products', 'profile'));
+        if (empty($profile)) {
+            return redirect()->route('profile.edit');
+        }
+        else {
+            return view('profile', compact('page', 'products', 'profile'));
+        }
     }
 
     //商品検索機能

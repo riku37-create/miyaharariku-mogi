@@ -14,21 +14,12 @@ class ConditionsTableSeeder extends Seeder
      */
     public function run()
     {
-        $param = [
-            'content' => '良好'
+        $conditions = [
+            ['id' => 1, 'content' => '良好'],
+            ['id' => 2, 'content' => '目立った傷や汚れなし'],
+            ['id' => 3, 'content' => '傷ありやや傷や汚れあり'],
+            ['id' => 4, 'content' => '状態が悪い']
         ];
-        DB::table('conditions')->insert($param);
-        $param = [
-            'content' => '目立った傷や汚れなし'
-        ];
-        DB::table('conditions')->insert($param);
-        $param = [
-            'content' => 'やや傷や汚れあり'
-        ];
-        DB::table('conditions')->insert($param);
-        $param = [
-            'content' => '状態が悪い'
-        ];
-        DB::table('conditions')->insert($param);
+        DB::table('conditions')->insert($conditions);
     }
 }

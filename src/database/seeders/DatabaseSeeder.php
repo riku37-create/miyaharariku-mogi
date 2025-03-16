@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Profile;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,10 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(UsersTableSeeder::class);
+        User::factory(3)->has(Profile::factory())->create(); // ユーザー3人に対応するプロフィールを作成
         $this->call(ConditionsTableSeeder::class);
         $this->call(CategoriesTableSeeder::class);
         $this->call(ProductsTableSeeder::class);
-        $this->call(ProfilesTableSeeder::class);
     }
 }

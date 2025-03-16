@@ -123,17 +123,13 @@
     grid-template-columns: repeat(5, 1fr);
 }
 
-.category-content__block {
-    display: flex;
-    justify-content: space-between;
-}
-
 .content__block-button {
     display: none;
 }
 
 .content__block-name {
-    margin-bottom: 10px;
+    margin: 0 5px 10px 0;
+    padding: 3px;
     display: block;
     border: solid 1px #FF5555;
     border-radius: 10px;
