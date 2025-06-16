@@ -22,10 +22,13 @@ class UserController extends Controller
         if ($page === 'sell') {
             $products = $user->products()
             ->select('id','name','image')->latest('products.created_at')->get();
-        } else {
+        } elseif($page === 'buy') {
             $orders = $user->orders()->select('product_id')->get();
             $products = Product::whereIn('id', $orders)
             ->select('id','name','image')->get();
+        } elseif($page === 'deal') {
+            $deals = $user->comments()->select('product_id')->get();
+            $products =Product::whereIn('id', $deals)->select('id', 'name', 'image')->get();
         }
         $profile = Profile::where('user_id', $user->id)->first();
         if (empty($profile)) {

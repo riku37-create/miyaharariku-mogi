@@ -34,6 +34,10 @@
                 <a class="product-header__a {{ $page === 'buy' ? 'active' : '' }}"
                 href="{{ route('profile.index', ['page' => 'buy'])}}">購入した商品</a>
             </li>
+            <li class="product-header__item">
+                <a class="product-header__a {{ $page === 'deal' ? 'active' : '' }}"
+                href="{{ route('profile.index', ['page' => 'deal'] ) }}">取引中の商品</a>
+            </li>
         </ul>
     </nav>
 </div>
@@ -42,36 +46,50 @@
     <h1 class="product__item--none">商品はありません</h1>
     @else
     @if (request('page', 'sell') === 'sell')
-    @foreach ($products as $product)
-        <div class="product-item">
-            <a class="product-item__a" href="{{ route('product.sell', ['id' => $product->id]) }}">
-            <div class="product-item__image-box">
-                <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                @if($product->order()->where('product_id', $product->id)->exists())
-                <span class="image-box__sold">SOLD</span>
-                @endif
+        @foreach ($products as $product)
+            <div class="product-item">
+                <a class="product-item__a" href="{{ route('product.sell', ['id' => $product->id]) }}">
+                <div class="product-item__image-box">
+                    <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                    @if($product->order()->where('product_id', $product->id)->exists())
+                    <span class="image-box__sold">SOLD</span>
+                    @endif
+                </div>
+                </a>
+                <div class="product-item__name">
+                    <span class="item__name-text">{{ $product->name }}</span>
+                    <form class="item__name-form" action="{{ route('product.delete', ['id' => $product->id]) }}" method="post">
+                        @csrf
+                        <button class="form-button" type="submit">
+                            <i class="fa-solid fa-trash" style="color: #ff0000;"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
-            </a>
-            <div class="product-item__name">
-                <span class="item__name-text">{{ $product->name }}</span>
-                <form class="item__name-form" action="{{ route('product.delete', ['id' => $product->id]) }}" method="post">
-                    @csrf
-                    <button class="form-button" type="submit">
-                        <i class="fa-solid fa-trash" style="color: #ff0000;"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    @endforeach
+        @endforeach
     @elseif (request('page') === 'buy')
-    @foreach ($products as $product)
-        <div class="product__item">
-            <div class="product-item__image-box">
-                <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+        @foreach ($products as $product)
+            <div class="product__item">
+                <div class="product-item__image-box">
+                    <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                </div>
+                <span class="product-item__name">{{ $product->name }}</span>
             </div>
-            <span class="product-item__name">{{ $product->name }}</span>
-        </div>
-    @endforeach
+        @endforeach
+    @elseif (request('page') === 'deal')
+        @foreach($products as $product)
+            <div class="product-item">
+                <a class="product-item__a" href="">
+                    <div class="product-item__image-box">
+                        <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        @if($product->order()->where('product_id', $product->id)->exists())
+                        <span class="image-box__sold">SOLD</span>
+                        @endif
+                    </div>
+                </a>
+                <span class="product-item__name">{{ $product->name }}</span>
+            </div>
+        @endforeach
     @endif
 @endif
 </div>
