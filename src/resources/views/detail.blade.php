@@ -88,6 +88,8 @@
             <img class="avatar-image" src="{{ asset('storage/' . $product->user->profile->image) }}" alt="{{ $product->user->profile->name }}">
             <span class="avatar-name">{{ $product->user->profile->name }}</span>
         </div>
+        <h2 class="right-subtitle">チャット</h2>
+        <a href="{{ route('transactions.chat', ['transaction' => $product->id ]) }}">取引画面へ</a>
         <h2 id="comment" class="right-subtitle">コメント ({{ $commentCount }})</h2>
         @if(Auth::check())
         <form action="{{ route('store_comment', ['id' => $product->id]) }}" method="post">

@@ -7,6 +7,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionChatController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -58,7 +59,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::group(['prefix' => 'mypage'], function() {
       Route::get('', [UserController::class, 'index'])->name('profile.index');
-      Route::post('profile/search', [UserController::class, 'search'])->name('profile.search');
+      Route::post('/profile/search', [UserController::class, 'search'])->name('profile.search');
       Route::get('/profile/edit', [UserController::class,'edit'])->name('profile.edit');
       Route::PATCH('/profile/update/{profileId?}', [UserController::class,'update'])->name('profile.update');
     });
@@ -66,5 +67,13 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
     Route::get('/success', [PaymentController::class, 'success'])->name('checkout.success');
     Route::get('/cancel', [PaymentController::class, 'cancel'])->name('checkout.cancel');
+
+    Route::group(['prefix' => '/transaction/{transaction}'], function() {
+      Route::get('/chat', [TransactionChatController::class, 'show'])->name('transactions.chat');
+      Route::post('/chat', [TransactionChatController::class, 'store'])->name('transactions.chat.store');
+    });
+
+    Route::put('/chats/{chat}', [TransactionChatController::class, 'update'])->name('chats.update');
+    Route::delete('/chats/{chat}', [TransactionChatController::class, 'destroy'])->name('chats.destroy');
   });
 });

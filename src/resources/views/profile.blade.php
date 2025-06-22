@@ -42,13 +42,13 @@
     </nav>
 </div>
 <div class="product-main">
-    @if($products->isEmpty()){{-- 商品がない時 --}}
-    <h1 class="product__item--none">商品はありません</h1>
-    @else
     @if (request('page', 'sell') === 'sell')
+        @if($products->isEmpty()){{-- 商品がない時 --}}
+            <h1 class="product__item--none">商品はありません</h1>
+        @endif
         @foreach ($products as $product)
             <div class="product-item">
-                <a class="product-item__a" href="{{ route('product.sell', ['id' => $product->id]) }}">
+                <a class="product-it__a" href="{{ route('product.sell', ['id' => $product->id]) }}">
                 <div class="product-item__image-box">
                     <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
                     @if($product->order()->where('product_id', $product->id)->exists())
@@ -68,6 +68,9 @@
             </div>
         @endforeach
     @elseif (request('page') === 'buy')
+        @if($products->isEmpty()){{-- 商品がない時 --}}
+            <h1 class="product__item--none">商品はありません</h1>
+        @endif
         @foreach ($products as $product)
             <div class="product__item">
                 <div class="product-item__image-box">
@@ -77,20 +80,41 @@
             </div>
         @endforeach
     @elseif (request('page') === 'deal')
-        @foreach($products as $product)
-            <div class="product-item">
-                <a class="product-item__a" href="">
-                    <div class="product-item__image-box">
-                        <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                        @if($product->order()->where('product_id', $product->id)->exists())
-                        <span class="image-box__sold">SOLD</span>
-                        @endif
-                    </div>
-                </a>
-                <span class="product-item__name">{{ $product->name }}</span>
-            </div>
-        @endforeach
+        @if ($sellerProducts->isEmpty() && $buyerProducts->isEmpty()){{-- 商品がない時 --}}
+            <h1 class="product__item--none">商品はありません</h1>
+        @endif
+        <div class="deal-section">
+            <h2>出品者としての取引</h2>
+            @foreach ($sellerProducts as $product)
+                <div class="product-item">
+                    <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
+                        <div class="product-item__image-box">
+                            <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                            @if($product->order()->where('product_id', $product->id)->exists())
+                            <span class="image-box__sold">SOLD</span>
+                            @endif
+                        </div>
+                    </a>
+                    <span class="product-item__name">{{ $product->name }}</span>
+                </div>
+            @endforeach
+        </div>
+        <div class="deal-section">
+            <h2>購入者としての取引</h2>
+            @foreach ($buyerProducts as $product)
+                <div class="product-item">
+                    <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
+                        <div class="product-item__image-box">
+                            <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                            @if($product->order()->where('product_id', $product->id)->exists())
+                            <span class="image-box__sold">SOLD</span>
+                            @endif
+                        </div>
+                    </a>
+                    <span class="product-item__name">{{ $product->name }}</span>
+                </div>
+            @endforeach
+        </div>
     @endif
-@endif
 </div>
 @endsection

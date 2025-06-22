@@ -49,4 +49,9 @@ class Product extends Model
     {
         return $this->hasOne(Order::class);
     }
+
+    public function chats()
+    {
+        return $this->hasMany(Chat::class);
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PurchaseRequest extends FormRequest
+class ChatRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,17 @@ class PurchaseRequest extends FormRequest
     public function rules()
     {
         return [
-            'text' => 'require|max:400',
-            'image' => 'mimes:jpeg,png'
+            'text' => 'required|max:400',
+            'image' => 'image|mimes:jpeg,png'
         ];
     }
 
     public function messages()
     {
         return [
-            'method.required' => '支払い方法を選択してください。',
+            'text.required' => '本文を入力してください',
+            'text.max' => '本文は400文字以内で入力してください',
+            'image.mimes' => '「.png」または「.jpg」形式でアップロードしてください'
         ];
     }
 }

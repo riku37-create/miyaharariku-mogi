@@ -10,6 +10,7 @@ use App\Models\Profile;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Chat;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -19,6 +20,7 @@ class UserController extends Controller
     {
         $page = $request->get('page', 'sell');
         $user = User::find(Auth::id());
+
         if ($page === 'sell') {
             $products = $user->products()
             ->select('id','name','image')->latest('products.created_at')->get();
@@ -27,15 +29,31 @@ class UserController extends Controller
             $products = Product::whereIn('id', $orders)
             ->select('id','name','image')->get();
         } elseif($page === 'deal') {
-            $deals = $user->comments()->select('product_id')->get();
-            $products =Product::whereIn('id', $deals)->select('id', 'name', 'image')->get();
+            // 取引中で自分が出品者
+            $sellerProductIds = Product::where('user_id', $user->id)->pluck('id');
+            $sellerChatProducts = Chat::whereIn('product_id', $sellerProductIds)
+                                ->select('product_id')
+                                ->distinct()
+                                ->pluck('product_id');
+            $sellerProducts = Product::whereIn('id', $sellerChatProducts)->get();
+            // 引取中で自分が購入者
+            $buyerChatProducts = Chat::where('user_id', $user->id)
+                                ->select('product_id')
+                                ->distinct()
+                                ->pluck('product_id');
+            $buyerProducts = Product::where('user_id', '!=', $user->id)
+                ->whereIn('id', $buyerChatProducts)->get();
         }
         $profile = Profile::where('user_id', $user->id)->first();
         if (empty($profile)) {
             return redirect()->route('profile.edit');
         }
         else {
-            return view('profile', compact('page', 'products', 'profile'));
+            if ($page === 'deal') {
+                return view('profile', compact('page', 'sellerProducts', 'buyerProducts', 'profile'));
+            } else {
+                return view('profile', compact('page', 'products', 'profile'));
+            }
         }
     }
 

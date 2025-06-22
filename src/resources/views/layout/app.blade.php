@@ -30,9 +30,9 @@
                 <ul class="nav-list">
                     <li class="nav-item">
                         @if (Auth::check())
-                        <form action="/logout" method="post">
+                        <form class="nav-item__form" action="/logout" method="post">
                             @csrf
-                            <button class="nav-item__button">ログアウト</button>
+                            <button class="nav-item__a">ログアウト</button>
                         </form>
                         @else
                             <a class="nav-item__a" href="/login">ログイン</a>
