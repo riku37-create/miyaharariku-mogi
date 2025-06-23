@@ -38,8 +38,10 @@
                         <img class="seller-avatar" src="{{ asset('storage/' .  $seller->image ) }}">
                         <span class="seller-name">「{{  $seller->name }}」さんとの取引画面</span>
                     </div>
-                    @if ($chatPartnerProfile)
+                    @if ($chatPartnerProfile && !$isRatedByPartner)
                         <button id="complete-button" class="complete-button">取引を完了する</button>
+                    @elseif ($isRatedByPartner)
+                        <p class="complete-message">取引は完了しました。</p>
                     @endif
                 @endif
             </div>
@@ -187,13 +189,12 @@
         }
 
         //モーダル表示(画面遷移時)
-        const isRatedByPartner = @json($isRatedByPartner);
-        const showModal = "{{ request('rated') }}" === "true";
-        if (isRatedByPartner && showModal) {
+        const shouldShowModal = @json($shouldShowModal);
+        if (shouldShowModal) {
             const modal = document.getElementById('ratingModal');
             if (modal) {
                 modal.style.display = 'flex';
             }
         }
-    });
+        });
 </script>

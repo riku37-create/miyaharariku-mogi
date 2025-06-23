@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Chat;
 use App\Models\Rating;
+use App\Mail\RatingSubmitted;
+use Illuminate\Support\Facades\Mail;
 
 class TransactionChatController extends Controller
 {
@@ -68,20 +70,23 @@ class TransactionChatController extends Controller
             ['last_read_at' => now()]
         );
 
-        // 購入者が評価したか
         $isRatedByPartner = false;
-        if ($request->has('rated')) {
-            // 評価直後にモーダルを開く必要がある（購入者が出品者を評価したパターン）
-            $isRatedByPartner = true;
-        } else {
         if ($chatPartnerProfile && $chatPartnerProfile->user) {
-            $isRatedByPartner = Rating::where('rater_id', $chatPartnerProfile->user->id)
-                                    ->where('ratee_id', $user->id)
-                                    ->exists();
-        }
+            $partnerUserId = $chatPartnerProfile->user->id;
+            // 相手が自分を評価済みか?
+            $isRatedByPartner = Rating::where('rater_id', $partnerUserId)
+                ->where('ratee_id', $user->id)
+                ->exists();
+
+            // 自分がパートナーを未評価ならモーダル表示
+            $hasUserRatedPartner = Rating::where('rater_id', $user->id)
+                ->where('ratee_id', $partnerUserId)
+                ->exists();
+            
+            $shouldShowModal = $isRatedByPartner && !$hasUserRatedPartner;
         }
 
-        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner' ));
+        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner', 'shouldShowModal' ));
     }
 
     public function store(ChatRequest $request, $productId)
@@ -128,10 +133,10 @@ class TransactionChatController extends Controller
         $ratee = $user;
         $rating = (int) $request->input('rating');
 
-        Mail::to($ratee->email)->send(new RatingSubmitted('rater', 'ratee', 'rating'));
+        Mail::to($ratee->email)->send(new RatingSubmitted($rater, $ratee, $rating));
+
         return redirect()->route('transactions.chat', [
-        'transaction' => $request->input('product_id'),
-        'rated' => true // ★評価済みフラグ
-        ])->with('success', '評価を送信しました。');
+            'transaction' => $request->input('product_id'),
+        ]);
     }
 }

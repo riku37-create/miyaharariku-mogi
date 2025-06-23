@@ -96,6 +96,12 @@
     cursor: pointer;
 }
 
+.complete-message {
+    font-size: 24px;
+    font-weight: 400;
+    color: #FF8282;
+}
+
 .product-summary {
     padding-top: 10px;
     padding-bottom: 10px;
