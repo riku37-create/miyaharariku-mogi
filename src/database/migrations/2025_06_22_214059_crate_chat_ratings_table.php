@@ -15,15 +15,17 @@ class CrateChatRatingsTable extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('rater_id'); // 評価した人
             $table->unsignedBigInteger('ratee_id'); // 評価された人（users.id）
             $table->unsignedTinyInteger('rating'); // 1〜5など
             $table->timestamps();
-
+            
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('rater_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('ratee_id')->references('id')->on('users')->onDelete('cascade');
             // 同じ組み合わせで複数回評価できないようにする
-            $table->unique(['rater_id', 'ratee_id']);
+            $table->unique(['rater_id', 'ratee_id', 'product_id']);
         });
     }
 

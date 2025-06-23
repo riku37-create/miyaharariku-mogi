@@ -71,22 +71,26 @@ class TransactionChatController extends Controller
         );
 
         $isRatedByPartner = false;
+        $hasUserRatedPartner =false;
+        $shouldShowModal = false;
         if ($chatPartnerProfile && $chatPartnerProfile->user) {
             $partnerUserId = $chatPartnerProfile->user->id;
             // 相手が自分を評価済みか?
             $isRatedByPartner = Rating::where('rater_id', $partnerUserId)
                 ->where('ratee_id', $user->id)
+                ->where('product_id', $product->id)
                 ->exists();
 
             // 自分がパートナーを未評価ならモーダル表示
             $hasUserRatedPartner = Rating::where('rater_id', $user->id)
                 ->where('ratee_id', $partnerUserId)
+                ->where('product_id', $product->id) // ← 追加
                 ->exists();
             
             $shouldShowModal = $isRatedByPartner && !$hasUserRatedPartner;
         }
 
-        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner', 'shouldShowModal' ));
+        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner', 'hasUserRatedPartner', 'shouldShowModal' ));
     }
 
     public function store(ChatRequest $request, $productId)
@@ -125,7 +129,11 @@ class TransactionChatController extends Controller
     public function rate(Request $request, User $user)
     {
         Rating::updateOrCreate(
-        ['rater_id' => Auth::id(), 'ratee_id' => $user->id],
+        [
+            'rater_id' => Auth::id(),
+            'ratee_id' => $user->id,
+            'product_id' => $request->input('product_id')
+        ],
         ['rating' => $request->input('rating')]
         );
 
@@ -135,8 +143,6 @@ class TransactionChatController extends Controller
 
         Mail::to($ratee->email)->send(new RatingSubmitted($rater, $ratee, $rating));
 
-        return redirect()->route('transactions.chat', [
-            'transaction' => $request->input('product_id'),
-        ]);
+        return redirect()->route('product.index');
     }
 }

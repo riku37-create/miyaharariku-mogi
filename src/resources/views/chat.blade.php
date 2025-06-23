@@ -38,9 +38,9 @@
                         <img class="seller-avatar" src="{{ asset('storage/' .  $seller->image ) }}">
                         <span class="seller-name">「{{  $seller->name }}」さんとの取引画面</span>
                     </div>
-                    @if ($chatPartnerProfile && !$isRatedByPartner)
+                    @if ($chatPartnerProfile && !$hasUserRatedPartner)
                         <button id="complete-button" class="complete-button">取引を完了する</button>
-                    @elseif ($isRatedByPartner)
+                    @elseif ($hasUserRatedPartner)
                         <p class="complete-message">取引は完了しました。</p>
                     @endif
                 @endif
@@ -129,7 +129,6 @@
         <form class="chat-form" action="{{ route('transactions.chat.store', ['transaction' => $product->id]) }}" method="post"enctype="multipart/form-data" >
             @csrf
             <input class="chat-input" name="text" type="text" value="{{ old('text') }}" placeholder="取引メッセージを記入してください">
-            <span id="filename" class="chat-filename">未選択</span>
             <input id="imageInput" class="chat-image-input" type="file" name="image" accept="image/*" style="display: none;">
             <button class="chat-image-button" type="button" onclick="document.getElementById('imageInput').click();">画像を追加</button>
             <button class="chat-submit-button" type="submit">
@@ -164,12 +163,6 @@
 @endsection
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // 画像ファイル名の表示
-        document.getElementById('imageInput').addEventListener('change', function () {
-            const filename = this.files[0]?.name || '未選択';
-            document.getElementById('filename').textContent = filename;
-        });
-
         // チャット編集の切り替え
         window.toggleEdit = function (chatId) {
             const textElement = document.getElementById(`chat-text-${chatId}`)
