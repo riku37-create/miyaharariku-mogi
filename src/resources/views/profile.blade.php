@@ -18,7 +18,19 @@
     <div class="data-image">
         <img class="data-image__image" src="{{ asset('storage/' . $profile->image) }}" alt="{{ $profile->name }}">
     </div>
-    <h2 class="data-name">{{ $profile->name }}</h2>
+    <div class="data-user">
+        <h2 class="data-name">{{ $profile->name }}</h2>
+        @php
+            $averageRating = round($profile->user->averageRating());
+        @endphp
+        @if ($averageRating > 0)
+            <div class="rating-stars">
+                @for ($i = 1; $i <= 5; $i++)
+                    <span class="star {{ $i <= $averageRating ? 'filled' : '' }}">★</span>
+                @endfor
+            </div>
+        @endif
+    </div>
     <form class="data-form" action="{{ route('profile.edit') }}">
         <button class="data-form__button" type="submit">プロフィールを編集</button>
     </form>
@@ -82,39 +94,42 @@
     @elseif (request('page') === 'deal')
         @if ($sellerProducts->isEmpty() && $buyerProducts->isEmpty()){{-- 商品がない時 --}}
             <h1 class="product__item--none">商品はありません</h1>
+        @else
+            <div class="deal-section">
+                <h2>出品者としての取引</h2>
+                @foreach ($sellerProducts as $product)
+                    <div class="product-item">
+                        <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
+                            <div class="product-item__image-box">
+                                <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                {{-- 未読通知 --}}
+                                @if(!empty($notifications[$product->id]))
+                                    <span class="notification-badge">{{ $notifications[$product->id] }}</span>
+                                @endif
+                            </div>
+                        </a>
+                        <span class="product-item__name">{{ $product->name }}</span>
+                    </div>
+                @endforeach
+            </div>
+            <div class="deal-section">
+                <h2>購入者としての取引</h2>
+                @foreach ($buyerProducts as $product)
+                    <div class="product-item">
+                        <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
+                            <div class="product-item__image-box">
+                                <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                {{-- 未読通知 --}}
+                                @if(!empty($notifications[$product->id]))
+                                    <span class="notification-badge">{{ $notifications[$product->id] }}</span>
+                                @endif
+                            </div>
+                        </a>
+                        <span class="product-item__name">{{ $product->name }}</span>
+                    </div>
+                @endforeach
+            </div>
         @endif
-        <div class="deal-section">
-            <h2>出品者としての取引</h2>
-            @foreach ($sellerProducts as $product)
-                <div class="product-item">
-                    <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
-                        <div class="product-item__image-box">
-                            <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                            @if($product->order()->where('product_id', $product->id)->exists())
-                            <span class="image-box__sold">SOLD</span>
-                            @endif
-                        </div>
-                    </a>
-                    <span class="product-item__name">{{ $product->name }}</span>
-                </div>
-            @endforeach
-        </div>
-        <div class="deal-section">
-            <h2>購入者としての取引</h2>
-            @foreach ($buyerProducts as $product)
-                <div class="product-item">
-                    <a class="product-item__a" href="{{ route('transactions.chat', ['transaction' => $product->id]) }}">
-                        <div class="product-item__image-box">
-                            <img class="image-box__image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                            @if($product->order()->where('product_id', $product->id)->exists())
-                            <span class="image-box__sold">SOLD</span>
-                            @endif
-                        </div>
-                    </a>
-                    <span class="product-item__name">{{ $product->name }}</span>
-                </div>
-            @endforeach
-        </div>
     @endif
 </div>
 @endsection

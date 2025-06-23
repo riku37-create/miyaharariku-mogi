@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\ChatRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Chat;
+use App\Models\Rating;
 
 class TransactionChatController extends Controller
 {
-    public function show($transactionId)
+    public function show(Request $request, $transactionId)
     {
         $product = Product::find($transactionId);
         $seller = $product->user->profile;
@@ -61,7 +63,25 @@ class TransactionChatController extends Controller
             $chatPartnerProfile = $firstChatFromOther->user->profile;
         }
 
-        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts'));
+        DB::table('chat_reads')->updateOrInsert(
+            ['user_id' => $user->id, 'product_id' => $product->id],
+            ['last_read_at' => now()]
+        );
+
+        // 購入者が評価したか
+        $isRatedByPartner = false;
+        if ($request->has('rated')) {
+            // 評価直後にモーダルを開く必要がある（購入者が出品者を評価したパターン）
+            $isRatedByPartner = true;
+        } else {
+        if ($chatPartnerProfile && $chatPartnerProfile->user) {
+            $isRatedByPartner = Rating::where('rater_id', $chatPartnerProfile->user->id)
+                                    ->where('ratee_id', $user->id)
+                                    ->exists();
+        }
+        }
+
+        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner' ));
     }
 
     public function store(ChatRequest $request, $productId)
@@ -95,5 +115,23 @@ class TransactionChatController extends Controller
         $chat->delete();
 
         return back()->with('success', 'チャットを削除しました');
+    }
+
+    public function rate(Request $request, User $user)
+    {
+        Rating::updateOrCreate(
+        ['rater_id' => Auth::id(), 'ratee_id' => $user->id],
+        ['rating' => $request->input('rating')]
+        );
+
+        $rater = Auth::user();
+        $ratee = $user;
+        $rating = (int) $request->input('rating');
+
+        Mail::to($ratee->email)->send(new RatingSubmitted('rater', 'ratee', 'rating'));
+        return redirect()->route('transactions.chat', [
+        'transaction' => $request->input('product_id'),
+        'rated' => true // ★評価済みフラグ
+        ])->with('success', '評価を送信しました。');
     }
 }

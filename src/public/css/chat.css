@@ -61,8 +61,14 @@
     padding-left: 30px;
 }
 
-
 .seller-info {
+    padding: 10px 10px 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.seller-info-main {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -77,6 +83,17 @@
 .seller-name {
     font-size: 36px;
     font-weight: 700;
+}
+
+.complete-button {
+    padding: 21px 23px;
+    background-color: #FF8282;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: 400;
+    border-radius: 30px;
+    cursor: pointer;
 }
 
 .product-summary {
@@ -141,15 +158,6 @@
     gap: 8px;
     font-size: 20px;
     font-weight: 700;
-}
-
-.left-info {
-    justify-content: flex-start;
-}
-
-.right-info {
-    justify-content: flex-end;
-    flex-direction: row-reverse;
 }
 
 .chat-avatar {
@@ -280,3 +288,108 @@
     height: 60px;
 }
 
+/* モーダルの全体背景（半透明の黒） */
+.rating-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.5); /* 背景の暗転 */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.rating-modal-content {
+    width: 598px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FDFCE6;
+    border-radius: 15px;
+}
+
+.rating-modal__title {
+    width: 100%;
+    padding: 21px 23px;
+    border-bottom: 1px solid #000;
+    font-size: 35px;
+    font-weight: 400;
+}
+
+.rating-modal-content form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-modal__question {
+    padding: 21px 23px;
+    font-size: 20px;
+    font-weight: 400;
+    color: #868686;
+    align-self: flex-start;
+}
+
+/* 星評価部分 */
+.stars {
+    padding: 21px 23px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 0;
+    border-bottom: 1px solid #000;
+}
+
+.stars input[type="radio"] {
+    display: none;
+}
+
+.stars label {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    font-size: 100px;        /* 星のサイズ調整 */
+    text-align: center;     /* 横中央 */
+    line-height: 100px;     /* 縦中央 */
+    color: #D9D9D9;
+    cursor: pointer;
+}
+
+.stars label:hover,
+.stars label:hover ~ label {
+    color: #FFF048;
+}
+
+/* チェックされた星から左側まで金色に */
+.stars input[type="radio"]:checked ~ label {
+    color: #FFF048;
+}
+
+/* 送信ボタン */
+.submit-button {
+    width: 100%;
+    padding: 21px 23px 0;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+}
+
+.submit-button button {
+    padding: 21px 23px;
+    background-color: #FF8282;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: 400;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-button button:hover {
+    background-color: #e05555;
+}

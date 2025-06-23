@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\AddressRequest;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +13,6 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Chat;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -43,6 +44,24 @@ class UserController extends Controller
                                 ->pluck('product_id');
             $buyerProducts = Product::where('user_id', '!=', $user->id)
                 ->whereIn('id', $buyerChatProducts)->get();
+
+            $notifications = [];
+
+            foreach ($sellerProducts->merge($buyerProducts) as $product) {
+                $lastRead = DB::table('chat_reads')
+                    ->where('user_id', $user->id)
+                    ->where('product_id', $product->id)
+                    ->value('last_read_at');
+
+                $unreadCount = Chat::where('product_id', $product->id)
+                    ->where('user_id', '!=', $user->id) // 自分以外
+                    ->when($lastRead, function ($query) use ($lastRead) {
+                        $query->where('created_at', '>', $lastRead);
+                    })
+                    ->count();
+
+                $notifications[$product->id] = $unreadCount;
+            }
         }
         $profile = Profile::where('user_id', $user->id)->first();
         if (empty($profile)) {
@@ -50,7 +69,7 @@ class UserController extends Controller
         }
         else {
             if ($page === 'deal') {
-                return view('profile', compact('page', 'sellerProducts', 'buyerProducts', 'profile'));
+                return view('profile', compact('page', 'sellerProducts', 'buyerProducts', 'profile', 'notifications'));
             } else {
                 return view('profile', compact('page', 'products', 'profile'));
             }

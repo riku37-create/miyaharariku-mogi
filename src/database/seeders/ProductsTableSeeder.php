@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Profile;
 
 class ProductsTableSeeder extends Seeder
 {
@@ -15,12 +17,23 @@ class ProductsTableSeeder extends Seeder
      */
     public function run()
     {
-        // 既存のユーザーを取得（存在しない場合は新規作成）
-        $user = User::first() ?? User::factory()->create();
+        // ユーザーを2人作成（メール・パスワードを指定）
+        $user1 = User::factory()->has(Profile::factory()->state(['image' => 'profile-img/person.png']))->create([
+            'name' => 'Test User1',
+            'email' => 'user1@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
+        $user2 = User::factory()->has(Profile::factory()->state(['image' => 'profile-img/person2.png']))->create([
+            'name' => 'Test User2',
+            'email' => 'user2@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
         $products = [
         [
             'id' => 1,
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'condition_id' => 1,
             'name' => '腕時計',
             'brand' => 'a',
@@ -30,7 +43,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 2,
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'condition_id' => 2,
             'name' => 'HDD',
             'brand' => 'a',
@@ -40,7 +53,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 3,
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'condition_id' => 3,
             'name' => '玉ねぎ三束',
             'brand' => 'a',
@@ -50,7 +63,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 4,
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'condition_id' => 4,
             'name' => '革靴',
             'brand' => 'a',
@@ -60,7 +73,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 5,
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'condition_id' => 1,
             'name' => 'ノートPC',
             'brand' => 'a',
@@ -70,7 +83,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 6,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
             'condition_id' => 2,
             'name' => 'マイク',
             'brand' => 'a',
@@ -80,7 +93,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 7,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
             'condition_id' => 3,
             'name' => 'ショルダーバッグ',
             'brand' => 'a',
@@ -90,7 +103,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 8,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
             'condition_id' => 4,
             'name' => 'タンブラー',
             'brand' => 'a',
@@ -100,7 +113,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 9,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
             'condition_id' => 1,
             'name' => 'コーヒーミル',
             'brand' => 'a',
@@ -110,7 +123,7 @@ class ProductsTableSeeder extends Seeder
         ],
         [
             'id' => 10,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
             'condition_id' => 2,
             'name' => 'メイクセット',
             'brand' => 'a',

@@ -29,11 +29,18 @@
         <div class="chat-header">
             <div class="seller-info">
                 @if ($isSeller && $chatPartnerProfile)
-                    <img class="seller-avatar" src="{{ asset('storage/' . $chatPartnerProfile->image ) }}">
-                    <span class="seller-name">「{{ $chatPartnerProfile->name }}」さんとの取引画面</span>
+                    <div class="seller-info-main">
+                        <img class="seller-avatar" src="{{ asset('storage/' . $chatPartnerProfile->image ) }}">
+                        <span class="seller-name">「{{ $chatPartnerProfile->name }}」さんとの取引画面</span>
+                    </div>
                 @elseif (!$isSeller)
-                    <img class="seller-avatar" src="{{ asset('storage/' .  $seller->image ) }}">
-                    <span class="seller-name">「{{  $seller->name }}」さんとの取引画面</span>
+                    <div class="seller-info-main">
+                        <img class="seller-avatar" src="{{ asset('storage/' .  $seller->image ) }}">
+                        <span class="seller-name">「{{  $seller->name }}」さんとの取引画面</span>
+                    </div>
+                    @if ($chatPartnerProfile)
+                        <button id="complete-button" class="complete-button">取引を完了する</button>
+                    @endif
                 @endif
             </div>
         </div>
@@ -55,9 +62,9 @@
                 @if ($isOwnMessage)
                     <div class="chat-wrapper right-wrapper">
                         {{-- 自分の情報 --}}
-                        <div class="chat-user-info right-info">
-                            <img class="chat-avatar" src="{{ asset('storage/' . $chatUserProfile->image) }}">
+                        <div class="chat-user-info">
                             <span class="chat-username">{{ $chatUserProfile->name }}</span>
+                            <img class="chat-avatar" src="{{ asset('storage/' . $chatUserProfile->image) }}">
                         </div>
                         {{-- 自分のメッセージ --}}
                         <div class="chat-entry buyer-entry">
@@ -93,9 +100,9 @@
                 @else
                     <div class="chat-wrapper left-wrapper">
                         {{-- 相手の情報 --}}
-                        <div class="chat-user-info left-info">
-                            <span class="chat-username">{{ $chatUserProfile->name }}</span>
+                        <div class="chat-user-info">
                             <img class="chat-avatar" src="{{ asset('storage/' . ($chatUserProfile->image)) }}">
+                            <span class="chat-username">{{ $chatUserProfile->name }}</span>
                         </div>
                         {{-- 相手のメッセージ --}}
                         <div class="chat-entry seller-entry">
@@ -129,23 +136,64 @@
         </form>
     </div>
 </div>
+
+{{-- モーダル --}}
+<div id="ratingModal" class="rating-modal" style="display: none;">
+    <div class="rating-modal-content">
+        <div class="rating-modal__title">取引が完了しました。</div>
+        @if ($chatPartnerProfile)
+            <form action="{{ route('rating.submit', ['user' => $chatPartnerProfile->user_id]) }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                <span class="rating-modal__question">今回の取引相手はどうでしたか？</span>
+                <div class="stars">
+                    @for ($i = 5; $i >= 1; $i--)
+                        <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}">
+                        <label for="star{{ $i }}">★</label>
+                    @endfor
+                </div>
+                <div class="submit-button">
+                    <button type="submit">送信する</button>
+                </div>
+            </form>
+        @endif
+    </div>
+</div>
 @endsection
-
 <script>
-    document.getElementById('imageInput').addEventListener('change', function () {
-    const filename = this.files[0]?.name || '未選択';
-    document.getElementById('filename').textContent = filename;
+    document.addEventListener('DOMContentLoaded', function () {
+        // 画像ファイル名の表示
+        document.getElementById('imageInput').addEventListener('change', function () {
+            const filename = this.files[0]?.name || '未選択';
+            document.getElementById('filename').textContent = filename;
+        });
+
+        // チャット編集の切り替え
+        window.toggleEdit = function (chatId) {
+            const textElement = document.getElementById(`chat-text-${chatId}`)
+            const formElement = document.getElementById(`chat-form-${chatId}`)
+
+            textElement.style.display = 'none';
+            formElement.style.display = 'block';
+            formElement.querySelector('input').focus();
+        }
+
+        // モーダル表示(クリック時)
+        const completeBtn = document.getElementById('complete-button');
+        if (completeBtn) {
+            completeBtn.addEventListener('click', function () {
+                document.getElementById('ratingModal').style.display = 'flex';
+            });
+        }
+
+        //モーダル表示(画面遷移時)
+        const isRatedByPartner = @json($isRatedByPartner);
+        const showModal = "{{ request('rated') }}" === "true";
+        if (isRatedByPartner && showModal) {
+            const modal = document.getElementById('ratingModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
     });
-
-    function toggleEdit(chatId) {
-        const textElement = document.getElementById(`chat-text-${chatId}`)
-        const formElement = document.getElementById(`chat-form-${chatId}`)
-
-        //表示切り替え
-        textElement.style.display = 'none';
-        formElement.style.display = 'block';
-
-        //自動フォーカス
-        formElement.querySelector('input').focus();
-    }
 </script>

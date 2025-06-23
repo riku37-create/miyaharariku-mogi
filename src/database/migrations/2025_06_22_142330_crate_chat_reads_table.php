@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CrateChatsTable extends Migration
+class CrateChatReadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CrateChatsTable extends Migration
      */
     public function up()
     {
-        Schema::create('chats', function (Blueprint $table) {
+        Schema::create('chat_reads', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('text');
-            $table->string('image')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->timestamp('last_read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CrateChatsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chats');
+        Schema::dropIfExists('chat_reads');
     }
 }

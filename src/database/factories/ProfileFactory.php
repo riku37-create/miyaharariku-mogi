@@ -17,7 +17,6 @@ class ProfileFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => User::factory(), // ユーザーを同時に作成
             'name' => $this->faker->name,
             'post' => $this->faker->postcode,
             'image' => 'profile-img/person.png',

@@ -75,5 +75,6 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::put('/chats/{chat}', [TransactionChatController::class, 'update'])->name('chats.update');
     Route::delete('/chats/{chat}', [TransactionChatController::class, 'destroy'])->name('chats.destroy');
+    Route::post('/{user}/rate', [TransactionChatController::class, 'rate'])->name('rating.submit');
   });
 });
