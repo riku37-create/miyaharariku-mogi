@@ -8,22 +8,11 @@
 <div class="content">
     <div class="others">
         <span class="others-title">その他の取引</span>
-        <div class="deal-section">
-            <span class="deal-section-title">出品者としての取引</span>
-            @foreach ($sellerProducts as $other)
-                <a href="{{ route('transactions.chat', ['transaction' => $other->id]) }}">
-                    <div class="deal-item-name">{{ $other->name }}</div>
-                </a>
-            @endforeach
-        </div>
-        <div class="deal-section">
-            <span class="deal-section-title">購入者としての取引</span>
-            @foreach ($buyerProducts as $other)
-                <a href="{{ route('transactions.chat', ['transaction' => $other->id]) }}">
-                    <div class="deal-item-name">{{ $other->name }}</div>
-                </a>
-            @endforeach
-        </div>
+        @foreach ($otherProducts as $other)
+            <a href="{{ route('transactions.chat', ['transaction' => $other->id]) }}">
+                <div class="deal-item-name">{{ $other->name }}</div>
+            </a>
+        @endforeach
     </div>
     <div class="main">
         <div class="chat-header">

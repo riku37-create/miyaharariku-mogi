@@ -8,6 +8,7 @@ use App\Http\Requests\ChatRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Order;
 use App\Models\Chat;
 use App\Models\Rating;
 use App\Mail\RatingSubmitted;
@@ -17,80 +18,102 @@ class TransactionChatController extends Controller
 {
     public function show(Request $request, $transactionId)
     {
-        $product = Product::find($transactionId);
+        $product = Product::findOrFail($transactionId);
         $seller = $product->user->profile;
-        $user = User::find(Auth::id());
+        $user = Auth::user();
+        $userId = $user->id;
 
         // 出品者とログインユーザーが一致していれば出品者
-        $isSeller = $product->user_id === $user->id;
+        $isSeller = $product->user_id === $userId;
 
-        // 出品者として関わっている商品ID（他人がチャットしてきた）
-        $sellerProductIds = Product::where('user_id', $user->id)->pluck('id');
-        $sellerChatProductIds = Chat::whereIn('product_id', $sellerProductIds)
-            ->where('user_id', '!=', $user->id) // 自分以外がチャットした
-            ->select('product_id')
-            ->distinct()
-            ->pluck('product_id');
-        $sellerProducts = Product::whereIn('id', $sellerChatProductIds)
-            ->where('id', '!=', $transactionId)
+        // 自分が購入した商品(購入者) チャットの商品以外
+        $buyerProductIds = Order::where('user_id', $userId)->pluck('product_id')->toArray();
+
+        // 自分が出品し、購入された商品(出品者) チャットの商品以外
+        $sellerProductIds = Product::where('user_id', $userId)
+            ->whereIn('id', Order::pluck('product_id'))
+            ->pluck('id')->toArray();
+
+        // 両方をまとめて取得
+        $relatedProductIds = collect($buyerProductIds)
+            ->merge($sellerProductIds)
+            ->unique()
+            ->reject(fn($id) => $id == $transactionId)
+            ->values();
+
+        $ratings = Rating::whereIn('product_id', $relatedProductIds)->get();
+
+        $incompleteRatedProductIds = [];
+
+        foreach ($relatedProductIds as $pid) {
+            $order = Order::where('product_id', $pid)->first();
+            // 購入者
+            $sellerId = Product::find($pid)->user_id;
+            // 出品者
+            $partnerId = $userId === $sellerId ? $order->user_id : $sellerId;
+
+            $userRated = $ratings->contains(fn($r) =>
+            $r->rater_id == $userId && $r->ratee_id == $partnerId && $r->product_id == $pid
+            );
+            $partnerRated = $ratings->contains(fn($r) =>
+                $r->rater_id == $partnerId && $r->ratee_id == $userId && $r->product_id == $pid
+            );
+
+            // どちらか評価が未実施なら「取引中」
+            if (!($userRated && $partnerRated)) {
+                $incompleteRatedProductIds[] = $pid;
+            }
+        }
+
+        $otherProducts = Product::whereIn('id', $incompleteRatedProductIds)
             ->select('id', 'name')
             ->get();
 
-        // 購入者として関わっている商品ID（自分がチャットした）
-        $buyerChatProductIds = Chat::where('user_id', $user->id)
-            ->select('product_id')
-            ->distinct()
-            ->pluck('product_id');
-
-        // 自分が購入者、かつ出品者ではない商品（＝他人の出品物）
-        $buyerProducts = Product::whereIn('id', $buyerChatProductIds)
-            ->where('user_id', '!=', $user->id)
-            ->where('id', '!=', $transactionId)
-            ->select('id', 'name')
-            ->get();
-
-        $chats = Chat::where('product_id', $product->id)
+        $chats = Chat::where('product_id', $transactionId)
             ->with('user.profile')
             ->orderby('created_at', 'asc')
             ->get();
 
         // 相手の最初のチャットを取得
-        $firstChatFromOther = Chat::where('product_id', $product->id)
+        $firstChatFromOther = Chat::where('product_id', $transactionId)
             ->where('user_id', '!=', Auth::id())
             ->with('user.profile')
             ->orderBy('created_at', 'asc')
             ->first();
+
         $chatPartnerProfile = null;
         if ($firstChatFromOther && $firstChatFromOther->user) {
             $chatPartnerProfile = $firstChatFromOther->user->profile;
         }
 
+        // 最終閲覧を更新
         DB::table('chat_reads')->updateOrInsert(
-            ['user_id' => $user->id, 'product_id' => $product->id],
+            ['user_id' => $user->id, 'product_id' => $transactionId],
             ['last_read_at' => now()]
         );
 
         $isRatedByPartner = false;
         $hasUserRatedPartner =false;
         $shouldShowModal = false;
-        if ($chatPartnerProfile && $chatPartnerProfile->user) {
-            $partnerUserId = $chatPartnerProfile->user->id;
-            // 相手が自分を評価済みか?
-            $isRatedByPartner = Rating::where('rater_id', $partnerUserId)
-                ->where('ratee_id', $user->id)
-                ->where('product_id', $product->id)
-                ->exists();
+        if ($chatPartnerProfile) {
+            $partnerId = $chatPartnerProfile->user->id;
 
-            // 自分がパートナーを未評価ならモーダル表示
-            $hasUserRatedPartner = Rating::where('rater_id', $user->id)
-                ->where('ratee_id', $partnerUserId)
-                ->where('product_id', $product->id) // ← 追加
-                ->exists();
-            
+            $currentRatings = Rating::where('product_id', $product->id)
+            ->whereIn('rater_id', [$userId, $partnerId])
+            ->whereIn('ratee_id', [$userId, $partnerId])
+            ->get()
+            ->groupBy('rater_id');
+
+            // 自分がパートナーを評価したか
+            $hasUserRatedPartner = isset($currentRatings[$userId]);
+
+            // パートナーが自分を評価したか
+            $isRatedByPartner = isset($currentRatings[$partnerId]);
+
+            // モーダル表示判定（相手から評価されていて、自分はまだ）
             $shouldShowModal = $isRatedByPartner && !$hasUserRatedPartner;
         }
-
-        return view('/chat', compact('product', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'sellerProducts', 'buyerProducts', 'isRatedByPartner', 'hasUserRatedPartner', 'shouldShowModal' ));
+        return view('/chat', compact('product', 'otherProducts', 'seller', 'chats', 'isSeller', 'chatPartnerProfile', 'isRatedByPartner', 'hasUserRatedPartner', 'shouldShowModal' ));
     }
 
     public function store(ChatRequest $request, $productId)
@@ -116,14 +139,14 @@ class TransactionChatController extends Controller
             'text' => $request->input('text'),
         ]);
 
-        return back()->with('success', 'チャットを編集しました');
+        return back();
     }
 
     public function destroy(Chat $chat)
     {
         $chat->delete();
 
-        return back()->with('success', 'チャットを削除しました');
+        return back();
     }
 
     public function rate(Request $request, User $user)

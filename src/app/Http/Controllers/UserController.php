@@ -30,24 +30,50 @@ class UserController extends Controller
             $products = Product::whereIn('id', $orders)
             ->select('id','name','image')->get();
         } elseif($page === 'deal') {
-            // 取引中で自分が出品者
-            $sellerProductIds = Product::where('user_id', $user->id)->pluck('id');
-            $sellerChatProducts = Chat::whereIn('product_id', $sellerProductIds)
-                                ->select('product_id')
-                                ->distinct()
-                                ->pluck('product_id');
-            $sellerProducts = Product::whereIn('id', $sellerChatProducts)->get();
-            // 引取中で自分が購入者
-            $buyerChatProducts = Chat::where('user_id', $user->id)
-                                ->select('product_id')
-                                ->distinct()
-                                ->pluck('product_id');
-            $buyerProducts = Product::where('user_id', '!=', $user->id)
-                ->whereIn('id', $buyerChatProducts)->get();
+            // 自分が購入した商品(購入者)
+            $buyerProductsIds = Order::where('user_id', $user->id)
+                ->pluck('product_id');
+
+            // 自分が出品し、購入された商品(出品者)
+            $sellerProductIds = Product::where('user_id', $user->id)
+                ->whereIn('id', Order::pluck('product_id'))
+                ->pluck('id');
+
+            // 両方をまとめて取得
+            $allProductIds = $buyerProductsIds->merge($sellerProductIds)->unique();
+
+            // 評価が未完了の商品を抽出
+            $incompleteRatedProductIds = [];
+
+            foreach ($allProductIds as $productId) {
+                // 購入者
+                $partnerId = Order::where('product_id', $productId)->value('user_id');
+                // 出品者
+                $sellerId = Product::find($productId)->user_id;
+
+                $userRated = DB::table('ratings')->where('rater_id', $user->id)
+                    ->where('ratee_id', $user->id === $sellerId ? $partnerId : $sellerId)
+                    ->where('product_id', $productId)
+                    ->exists();
+
+                $partnerRated = DB::table('ratings')->where('rater_id', $user->id === $sellerId ? $partnerId : $sellerId)
+                    ->where('ratee_id', $user->id)
+                    ->where('product_id', $productId)
+                    ->exists();
+
+                // どちらか評価が未実施なら「取引中」
+                if (!($userRated && $partnerRated)) {
+                    $incompleteRatedProductIds[] = $productId;
+                }
+            }
+
+            $products = Product::whereIn('id', $incompleteRatedProductIds)
+                ->select('id', 'name', 'image')
+                ->get();
 
             $notifications = [];
 
-            foreach ($sellerProducts->merge($buyerProducts) as $product) {
+            foreach ($products as $product) {
                 $lastRead = DB::table('chat_reads')
                     ->where('user_id', $user->id)
                     ->where('product_id', $product->id)
@@ -69,7 +95,7 @@ class UserController extends Controller
         }
         else {
             if ($page === 'deal') {
-                return view('profile', compact('page', 'sellerProducts', 'buyerProducts', 'profile', 'notifications'));
+                return view('profile', compact('page', 'products', 'profile', 'notifications'));
             } else {
                 return view('profile', compact('page', 'products', 'profile'));
             }
