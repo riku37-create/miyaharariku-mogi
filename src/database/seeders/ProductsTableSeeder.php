@@ -17,18 +17,9 @@ class ProductsTableSeeder extends Seeder
      */
     public function run()
     {
-        // ユーザーを2人作成（メール・パスワードを指定）
-        $user1 = User::factory()->has(Profile::factory()->state(['image' => 'profile-img/person.png']))->create([
-            'name' => 'Test User1',
-            'email' => 'user1@example.com',
-            'password' => Hash::make('password123'),
-        ]);
+        $user1 = User::where('email', 'user1@example.com')->first();
+        $user2 = User::where('email', 'user2@example.com')->first();
 
-        $user2 = User::factory()->has(Profile::factory()->state(['image' => 'profile-img/person2.png']))->create([
-            'name' => 'Test User2',
-            'email' => 'user2@example.com',
-            'password' => Hash::make('password123'),
-        ]);
 
         $products = [
         [

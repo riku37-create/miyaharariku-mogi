@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         User::factory(3)->has(Profile::factory())->create(); // ユーザー3人に対応するプロフィールを作成
+        $this->call(UserTableSeeder::class);
         $this->call(ConditionsTableSeeder::class);
         $this->call(CategoriesTableSeeder::class);
         $this->call(ProductsTableSeeder::class);
